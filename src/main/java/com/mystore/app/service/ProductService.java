@@ -3,8 +3,12 @@ package com.mystore.app.service;
 import com.mystore.app.entity.Product;
 import com.mystore.app.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,15 +54,54 @@ public class ProductService {
     }
 
     // TODO: Method to search products by name
+    
+    public List<Product> searchProductsByName(String name){
+    	
+    	List<Product> list=null;
+    	list = productRepository.findByNameContainingIgnoreCase(name);
+    	return list;
+    }
+
+	
 
 
     // TODO: Method to filter products by category
+    
+    public List<Product> filterProductByCategory(String category) {
+    	List<Product> list =productRepository.findByCategory(category);
+		// TODO Auto-generated method stub
+		return list;
+	}
+
+	
+	
 
 
     // TODO: Method to filter products by price range
+    
+    public List<Product> filterByPrice(Double minPrice, Double maxPrice) {
+		// TODO Auto-generated method stub
+    	List<Product> list = productRepository.findByPriceBetween(minPrice,maxPrice);
+		return list;
+	}
+
+	
+
 
 
     // TODO: Method to filter products by stock quantity range
 
+    public List<Product> filterByStock(Integer minStock, Integer maxStock) {
+		// TODO Auto-generated method stub
+		List<Product> list =productRepository.findBystockQuantityBetween(minStock,maxStock);
+		return list;
+	}
 
+	public Page<Product> getPaginatedAndSortedProducts(int page, int pageSize, String sortBy, String sortDir) {
+		  // Create a Pageable object with sorting and pagination
+        Sort sort = Sort.by(Sort.Order.by(sortBy).with(Sort.Direction.fromString(sortDir)));
+        PageRequest pageRequest = PageRequest.of(page, pageSize, sort);
+
+        return productRepository.findAll(pageRequest);
+	}
 }
